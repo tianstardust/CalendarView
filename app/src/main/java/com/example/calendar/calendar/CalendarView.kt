@@ -5,10 +5,12 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
+import android.widget.Toast
 import com.example.calendar.R
 
-class CalendarView : View {
+class CalendarView : View, View.OnClickListener {
     private val mWeekTitle = Paint()
     private val mCurMonthTextPaint = Paint()
 
@@ -29,6 +31,7 @@ class CalendarView : View {
         initPaint()
         obtainAttrs()
         updateParameter()
+        setOnClickListener(this)
     }
 
     private fun updateParameter() {
@@ -118,6 +121,55 @@ class CalendarView : View {
         mCurMonthTextPaint.color = Color.parseColor("#000000")
         mCurMonthTextPaint.textAlign = Paint.Align.CENTER
         mCurMonthTextPaint.textSize = mTextSize.toFloat()
+    }
+
+    var mX: Float = 0f
+    var mY: Float = 0f
+    var isClick = true
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        if (event?.pointerCount!! > 1) return false
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> {
+                mX = event.x
+                mY = event.y
+                isClick = true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                var mDy: Float
+                if (isClick) {
+                    mDy = event.y - mY
+                    isClick = Math.abs(mDy) < 50
+                }
+            }
+            MotionEvent.ACTION_UP -> {
+                mX = event.x
+                mY = event.y
+            }
+        }
+        return super.onTouchEvent(event)
+    }
+
+    override fun onClick(view: View?) {
+        if (!isClick) return
+        val selectedIndex = getSelectedIndex()
+        if (selectedIndex != null) {
+            Toast.makeText(context, selectedIndex.toString(), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun getSelectedIndex(): CalendarEntity? {
+        if (mItemWidth == 0 || mItemHeight == 0) return null
+        if (mX <= paddingLeft || mX >= width - paddingRight) return null
+        var row = ((mX - paddingLeft) / mItemWidth).toInt()
+        if (row >= 7) {
+            row = 6
+        }
+        if (mY - mItemHeight <= 0) return null
+        var kind = (mY / mItemHeight).toInt() - 1
+        var position = kind * 7 + row
+        if (position in 0 until calendarList.size)
+            return calendarList[position]
+        return null
     }
 
 
