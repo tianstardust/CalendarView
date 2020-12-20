@@ -1,4 +1,4 @@
-package com.example.customdemo.calendar
+package com.example.calendar.calendar
 
 import android.content.Context
 import android.graphics.Canvas
@@ -6,7 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.View
-import com.example.customdemo.R
+import com.example.calendar.R
 
 class CalendarView : View {
     private val mWeekTitle = Paint()
@@ -50,6 +50,16 @@ class CalendarView : View {
         mLineCount = calendarList.size / 7
         requestLayout()
         invalidate()
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        if (mLineCount != 0) {
+            val height =
+                MeasureSpec.makeMeasureSpec((mLineCount + 1) * mItemHeight, MeasureSpec.EXACTLY)
+            super.onMeasure(widthMeasureSpec, height)
+        } else {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

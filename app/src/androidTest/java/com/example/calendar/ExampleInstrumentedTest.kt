@@ -1,4 +1,4 @@
-package com.example.customdemo
+package com.example.calendar
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4

@@ -1,4 +1,4 @@
-package com.example.customdemo.calendar
+package com.example.calendar.calendar
 
 data class CalendarEntity(val year: Int, val month: Int, val day: Int, val isCurMonthDay: Boolean) {
     override fun toString(): String {
