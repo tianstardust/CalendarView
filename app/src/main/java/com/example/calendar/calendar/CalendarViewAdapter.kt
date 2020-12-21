@@ -24,12 +24,10 @@ class CalendarViewAdapter(var data: ArrayList<YearMonthEntity>) :
         }
     }
 
-    class CalendarViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    }
+    class CalendarViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CalendarViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_calendar, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_calendar, parent, false)
         return CalendarViewHolder(view)
     }
 
