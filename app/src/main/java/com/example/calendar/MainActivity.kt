@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        var data = ArrayList<YearMonthEntity>()
+        val data = ArrayList<YearMonthEntity>()
         for (i in 2019..2020) {
             for (j in 1..12) {
                 data.add(YearMonthEntity(i, j))

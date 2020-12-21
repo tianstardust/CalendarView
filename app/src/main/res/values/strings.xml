@@ -20,4 +20,9 @@
         <item>六</item>
         <item>日</item>
     </string-array>
+
+    <string name="dialog_range_start">起始时间</string>
+    <string name="dialog_range_end">截止时间</string>
+    <string name="dialog_range_reset">重置</string>
+    <string name="dialog_range_fix">确定</string>
 </resources>

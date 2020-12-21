@@ -10,9 +10,13 @@ import android.view.View
 import android.widget.Toast
 import com.example.calendar.R
 
+
 class CalendarView : View, View.OnClickListener {
     private val mWeekTitle = Paint()
     private val mCurMonthTextPaint = Paint()
+    private val mSelectedPaint = Paint()
+    private val mSelectedTextPaint = Paint()
+    private val mSelectedStartEndPaint = Paint()
 
     //文字默认高度16dp
     private var mTextSize = CalendarUtils.spToPx(context, 16)
@@ -22,11 +26,13 @@ class CalendarView : View, View.OnClickListener {
     private var mBaseLineHeight = 0f
     private var mItemWidth = 0
     private var mLineCount = 0
+    private var mRadius = 0
 
     private val weekArray = context.resources.getStringArray(R.array.week_start_sun)
     private var calendarList = ArrayList<CalendarEntity>()
 
     constructor(context: Context?) : super(context)
+
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
         initPaint()
         obtainAttrs()
@@ -68,6 +74,7 @@ class CalendarView : View, View.OnClickListener {
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         mItemWidth = (width - paddingLeft - paddingRight) / 7
+        mRadius = Math.min(mItemHeight, mItemWidth) * 2 / 5
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -83,16 +90,110 @@ class CalendarView : View, View.OnClickListener {
                     position++
                     continue
                 }
-                drawCurMonthText(canvas, calendarEntity, i, j)
+                val x = mItemWidth * j + paddingLeft
+                val y = mItemHeight * i
+                val cx = mItemWidth / 2 + x
+                if (!RangeSelectedEntity.isSelected(calendarEntity) || RangeSelectedEntity.getSelectedMode(
+                        calendarEntity
+                    ) == RangeSelectedEntity.Out_Range
+                ) {
+                    drawCurMonthText(canvas, calendarEntity, y, cx)
+                } else {
+                    drawSelectedDay(canvas, calendarEntity, x, y, cx)
+                }
                 position++
             }
         }
     }
 
-    private fun drawCurMonthText(canvas: Canvas?, calendarEntity: CalendarEntity, i: Int, j: Int) {
-        val x = mItemWidth * j + paddingLeft
-        val cx = mItemWidth / 2 + x
-        val y = mItemHeight * i
+    /**
+     * 绘制选中区域
+     */
+    private fun drawSelectedDay(
+        canvas: Canvas?,
+        calendarEntity: CalendarEntity,
+        x: Int,
+        y: Int,
+        cx: Int
+    ) {
+        val baseLineY = y + mBaseLineHeight
+        when (RangeSelectedEntity.getSelectedMode(calendarEntity)) {
+            RangeSelectedEntity.Only_Start -> {
+                canvas?.drawCircle(
+                    cx.toFloat(), (y + mItemHeight / 2).toFloat(),
+                    mRadius.toFloat(), mSelectedPaint
+                )
+//                canvas?.drawText(
+//                    calendarEntity.day.toString(), cx.toFloat(),
+//                    baseLineY, mSelectedTextPaint
+//                )
+                canvas?.drawText(
+                    "起始", cx.toFloat(),
+                    baseLineY, mSelectedStartEndPaint
+                )
+            }
+
+            RangeSelectedEntity.Not_Only_Start -> {
+                val cy = y + mItemHeight / 2
+                canvas?.drawCircle(
+                    cx.toFloat(), (y + mItemHeight / 2).toFloat(),
+                    mRadius.toFloat(), mSelectedPaint
+                )
+                canvas?.drawRect(
+                    cx.toFloat(),
+                    (cy - mRadius).toFloat(), (x + mItemWidth).toFloat(),
+                    (cy + mRadius).toFloat(), mSelectedPaint
+                )
+//                canvas?.drawText(
+//                    calendarEntity.day.toString(), cx.toFloat(),
+//                    baseLineY, mSelectedTextPaint
+//                )
+                canvas?.drawText(
+                    "起始", cx.toFloat(),
+                    baseLineY, mSelectedStartEndPaint
+                )
+            }
+
+            RangeSelectedEntity.In_Range -> {
+                val cy = y + mItemHeight / 2
+                canvas?.drawRect(
+                    x.toFloat(), (cy - mRadius).toFloat(),
+                    (x + mItemWidth).toFloat(), (cy + mRadius).toFloat(), mSelectedPaint
+                )
+                canvas?.drawText(
+                    calendarEntity.day.toString(), cx.toFloat(),
+                    baseLineY, mSelectedTextPaint
+                )
+            }
+
+            RangeSelectedEntity.In_END -> {
+                val cy = y + mItemHeight / 2
+                canvas?.drawCircle(
+                    cx.toFloat(), (y + mItemHeight / 2).toFloat(),
+                    mRadius.toFloat(), mSelectedPaint
+                )
+                canvas?.drawRect(
+                    x.toFloat(),
+                    (cy - mRadius).toFloat(), cx.toFloat(), (cy + mRadius).toFloat(), mSelectedPaint
+                )
+//                canvas?.drawText(
+//                    calendarEntity.day.toString(), cx.toFloat(),
+//                    baseLineY, mSelectedTextPaint
+//                )
+                canvas?.drawText(
+                    "截止", cx.toFloat(),
+                    baseLineY, mSelectedStartEndPaint
+                )
+            }
+        }
+    }
+
+    private fun drawCurMonthText(
+        canvas: Canvas?,
+        calendarEntity: CalendarEntity,
+        y: Int,
+        cx: Int
+    ) {
         val baseLineY = y + mBaseLineHeight
         canvas?.drawText(
             calendarEntity.day.toString(), cx.toFloat(),
@@ -121,6 +222,21 @@ class CalendarView : View, View.OnClickListener {
         mCurMonthTextPaint.color = Color.parseColor("#000000")
         mCurMonthTextPaint.textAlign = Paint.Align.CENTER
         mCurMonthTextPaint.textSize = mTextSize.toFloat()
+
+        mSelectedPaint.isAntiAlias = true
+        mSelectedPaint.style = Paint.Style.FILL
+        mSelectedPaint.color = Color.parseColor("#FF4857BD")
+
+        mSelectedTextPaint.isAntiAlias = true
+        mSelectedTextPaint.isFakeBoldText = true
+        mSelectedTextPaint.color = Color.parseColor("#DEFFFFFF")
+        mSelectedTextPaint.textAlign = Paint.Align.CENTER
+        mSelectedTextPaint.textSize = mTextSize.toFloat()
+
+        mSelectedStartEndPaint.isAntiAlias = true
+        mSelectedStartEndPaint.color = Color.parseColor("#DEFFFFFF")
+        mSelectedStartEndPaint.textAlign = Paint.Align.CENTER
+        mSelectedStartEndPaint.textSize = mTextSize.toFloat()
     }
 
     var mX: Float = 0f
@@ -151,13 +267,14 @@ class CalendarView : View, View.OnClickListener {
 
     override fun onClick(view: View?) {
         if (!isClick) return
-        val selectedIndex = getSelectedIndex()
-        if (selectedIndex != null) {
-            Toast.makeText(context, selectedIndex.toString(), Toast.LENGTH_SHORT).show()
-        }
+        val selectedEntity = getSelectedEntity() ?: return
+        if (!selectedEntity.isCurMonthDay) return
+        RangeSelectedEntity.setSelectedCalendar(selectedEntity)
+        Toast.makeText(context, selectedEntity.toString(), Toast.LENGTH_SHORT).show()
+        invalidate()
     }
 
-    private fun getSelectedIndex(): CalendarEntity? {
+    private fun getSelectedEntity(): CalendarEntity? {
         if (mItemWidth == 0 || mItemHeight == 0) return null
         if (mX <= paddingLeft || mX >= width - paddingRight) return null
         var row = ((mX - paddingLeft) / mItemWidth).toInt()
@@ -165,12 +282,11 @@ class CalendarView : View, View.OnClickListener {
             row = 6
         }
         if (mY - mItemHeight <= 0) return null
-        var kind = (mY / mItemHeight).toInt() - 1
-        var position = kind * 7 + row
+        val kind = (mY / mItemHeight).toInt() - 1
+        val position = kind * 7 + row
         if (position in 0 until calendarList.size)
             return calendarList[position]
         return null
     }
-
 
 }
