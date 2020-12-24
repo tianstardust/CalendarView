@@ -28,7 +28,7 @@ class CalendarView : View, View.OnClickListener {
     private var mLineCount = 0
     private var mRadius = 0
 
-    private val weekArray = context.resources.getStringArray(R.array.week_start_sun)
+    private var weekArray = context.resources.getStringArray(R.array.week_start_sun)
     private var calendarList = ArrayList<CalendarEntity>()
 
     constructor(context: Context?) : super(context)
@@ -56,6 +56,11 @@ class CalendarView : View, View.OnClickListener {
     fun initYearMonth(yearMonthEntity: YearMonthEntity, weekStartWith: Int) {
         //获取当月的集合
         calendarList = CalendarUtils.getCurMonthCalendar(yearMonthEntity, weekStartWith)
+        if (weekStartWith == CalendarUtils.WEEK_START_SUN) {
+            weekArray = context.resources.getStringArray(R.array.week_start_sun)
+        } else {
+            weekArray = context.resources.getStringArray(R.array.week_start_mon)
+        }
         mLineCount = calendarList.size / 7
         requestLayout()
         invalidate()

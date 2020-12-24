@@ -49,7 +49,7 @@ object RangeSelectedEntity {
             refresh(
                 YearMonthEntity(rangeSelectedStart!!.year, rangeSelectedStart!!.month), null
             )
-//            getRange(rangeSelectedStart, rangeSelectedEnd)
+            getRange(rangeSelectedStart, rangeSelectedEnd)
         }
         if (rangeSelectedStart != null && rangeSelectedEnd == null) {
             if (calendarEntity.toString() <= rangeSelectedStart.toString()) {
@@ -58,7 +58,7 @@ object RangeSelectedEntity {
                 refresh(
                     YearMonthEntity(rangeSelectedStart!!.year, rangeSelectedStart!!.month), null
                 )
-//                getRange(rangeSelectedStart, rangeSelectedEnd)
+                getRange(rangeSelectedStart, rangeSelectedEnd)
             } else {
                 rangeSelectedEnd = calendarEntity
                 refresh(
@@ -67,7 +67,7 @@ object RangeSelectedEntity {
                         rangeSelectedEnd!!.year, rangeSelectedEnd!!.month
                     )
                 )
-//                getRange(rangeSelectedStart, rangeSelectedEnd)
+                getRange(rangeSelectedStart, rangeSelectedEnd)
             }
         }
     }
