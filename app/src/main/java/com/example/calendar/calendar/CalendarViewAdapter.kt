@@ -39,7 +39,7 @@ class CalendarViewAdapter(var data: ArrayList<YearMonthEntity>) :
     override fun onBindViewHolder(holder: CalendarViewHolder, position: Int) {
         val yearMonthEntity = data[position]
         holder.itemView.apply {
-            item_calendar.initYearMonth(yearMonthEntity, CalendarUtils.WEEK_START_SUN)
+            item_calendar.initYearMonth(yearMonthEntity, CalendarUtils.WEEK_START_MON)
             item_title.text = "${yearMonthEntity.year}-${yearMonthEntity.month}"
         }
     }

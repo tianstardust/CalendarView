@@ -74,7 +74,7 @@ object CalendarUtils {
         var preDiff = 0
         when (weekStartWith) {
             WEEK_START_SUN -> preDiff = week - 1
-            WEEK_START_MON -> preDiff = if (week == 7) 6 else week
+            WEEK_START_MON -> preDiff = if (week == 1) 6 else week-2
         }
         return preDiff
     }
